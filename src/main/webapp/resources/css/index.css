@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+#container {
+	height : 600px;
+	padding : 50px 50px;
+	position : relative;
+}
+
+#container .top-area {
+	margin : 30px 30px;
+	height : 430px;
+}
+
+#container .mid-area {
+	margin : 30px 30px;	
+	height : 250px;
+}
+
+#container .top-area .t-left {
+	padding : 1px 1px;
+	width : 552px;
+	border : 1px solid black;
+	height : 430px;
+	float : left;
+}
+#container .top-area .t-right {
+	width : 552px;
+	border : 1px solid blue;
+	height : 430px;
+	float : left;
+	padding-top : 20px;
+}

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+  
+  <!-- 객체 선언 -->
+  
+  <configuration>
+  	<typeAliases>
+  		<typeAlias type="com.suc.DTO.addressDTO" alias="adDTO"/>
+  		<typeAlias type="com.suc.DTO.commercial_salesDTO" alias="csDTO"/>
+  		<typeAlias type="com.suc.DTO.ResultDTO" alias="rDTO"/>
+  		<typeAlias type="com.suc.DTO.commercial_analysis_indexDTO" alias="indexDTO"/>
+  		<typeAlias type="com.suc.DTO.BoardDTO" alias="bdto"/>
+  		<typeAlias type="com.suc.DTO.BoardDTO" alias="bdto"/>
+  	</typeAliases>
+  </configuration>

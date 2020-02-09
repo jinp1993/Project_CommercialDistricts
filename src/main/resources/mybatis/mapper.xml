@@ -1,0 +1,342 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 명령문 실행하는 위치 -->
+<!-- com.care.mybatis.아무 이름 보편적으로 패키지명.내가 사용할 이름 -->
+<!-- ~동 장소 찾기 -->
+<mapper namespace="com.suc.mybatis.myMapper">
+	<select resultType="adDTO" id="search_si">
+	<!-- 상위 40항목만 리스트로 return -->
+		select * from market_info WHERE dong=#{address} and market_name_area is not null <![CDATA[ AND ROWNUM <= 40 ]]>
+	</select>
+
+	<select resultType="adDTO" id="search_gu">
+		select * FROM market_info WHERE area=#{address} and market_name_area is not
+		null <![CDATA[ AND ROWNUM <= 40 ]]>
+	</select>
+
+	<select resultType="adDTO" id="search_dong">
+		select * FROM market_info WHERE dong=#{address} and market_name_area is not
+		null <![CDATA[ AND ROWNUM <= 40 ]]>
+	</select>
+
+	<select resultType="adDTO" id="market">
+		select * FROM market_info WHERE devide_unit=#{address} and market_name_area
+		is not null <![CDATA[ AND ROWNUM <= 40 ]]>
+	</select>
+
+
+	<select resultType="adDTO" id="search_agency1">
+		select address_name, longitude, latitude from market_info where address_name like '%'||#{address}||'%' <![CDATA[ AND ROWNUM <= 10 ]]> 
+		and rowid in (select max(rowid)from market_info group by address_name)
+	</select>
+	<select resultType="adDTO" id="search_agency2">
+		select name_load, longitude, latitude from market_info where name_load like '%'||#{address}||'%' <![CDATA[ AND ROWNUM <= 10 ]]> 
+		and rowid in (select max(rowid)from market_info group by name_load)
+	</select>
+	<select resultType="adDTO" id="search_agency3">
+		select address_road, longitude, latitude from market_info where address_road like '%'||#{address}||'%' <![CDATA[ AND ROWNUM <= 10 ]]> 
+		and rowid in (select max(rowid)from market_info group by address_road)
+	</select>
+	
+	<!-- 생활밀접업종 대분류 리스트 (외식업) -->
+	<select resultType="String" id="commercial_type_meal"
+		parameterType="String">
+		select commercial_service_type from market_info_type where
+		commercial_service_type_code like 'CS1%' AND +
+		rowid in(select max(rowid) from market_info_type group by
+		commercial_service_type)
+	</select>
+
+	<!-- 생활밀접업종 대분류 리스트 (서비스업) -->
+	<select resultType="String" id="commercial_type_service"
+		parameterType="String">
+		select commercial_service_type from market_info_type where
+		commercial_service_type_code like 'CS2%' AND +
+		rowid in(select max(rowid) from market_info_type group by
+		commercial_service_type)
+	</select>
+
+	<!-- 생활밀접업종 대분류 리스트 (소매업) -->
+	<select resultType="String" id="commercial_type_retail"
+		parameterType="String">
+		select commercial_service_type from market_info_type where
+		commercial_service_type_code like 'CS3%' AND +
+		rowid in(select max(rowid) from market_info_type group by
+		commercial_service_type)
+	</select>
+
+	<!-- 행정구역 리스트 -->
+	<select resultType="String" id="commercial_select_area"
+		parameterType="String">
+		select distinct city from market_info_area where city like '%구'
+	</select>
+
+	<!-- 행정동 리스트 -->
+	<select resultType="String" id="commercial_select_dong"
+		parameterType="String">
+		select distinct dong from market_info_area where city=#{city}
+	</select>
+
+	<!-- 도로명 리스트 -->
+	<select resultType="String" id="commercial_select_road_name"
+		parameterType="String">
+		select distinct road_name from market_info_area where dong=#{dong}
+	</select>
+
+	<select resultType="csDTO" id="commercial_salesDTO_OfType"
+		parameterType="rDTO">
+		select * from (select * from market_info_type where
+		commercial_service_type=#{type} and quarter = 2) where
+		commercial_road_type=#{road}
+	</select>
+
+	<!-- 점포 수 구하기 -->
+	<select resultType="String" id="number_of_market"
+		parameterType="indexDTO">
+		select number_of_stores from market_info_type where
+		commercial_road_type=#{analysis_list} and
+		commercial_service_type=#{analysis_type}
+	</select>
+
+	<!-- 주거인구 구하기 -->
+	<select resultType="String" id="living_population"
+		parameterType="indexDTO">
+		select living_population from living_population where
+		commercial_road_type=#{analysis_list}
+	</select>
+
+	<!-- 상권변화지표 구하기 -->
+	<select resultType="String" id="commercial_change_rate"
+		parameterType="indexDTO">
+		select commercial_change_name from commercial_change_by_dong where
+		dong_type=#{analysis_area}
+	</select>
+
+	<!-- 운영 영업 평균 개월 구하기 -->
+	<select resultType="String" id="market_on_business"
+		parameterType="indexDTO">
+		select market_on_business from commercial_change_by_dong where
+		dong_type=#{analysis_area}
+	</select>
+
+	<!-- 폐업 영업 평균 개월 구하기 -->
+	<select resultType="String" id="market_closed_business"
+		parameterType="indexDTO">
+		select market_closed_business from commercial_change_by_dong where
+		dong_type=#{analysis_area}
+	</select>
+
+	<!-- 직장인구수 구하기 -->
+	<select resultType="String" id="office_furniture"
+		parameterType="indexDTO">
+		select living_population from office_furniture where
+		commercial_road_type=#{analysis_list}
+	</select>
+
+	<!-- 유동인구수 구하기 -->
+	<select resultType="String" id="floating_population"
+		parameterType="indexDTO">
+		select floating_population from floating_population where
+		commercial_road_type=#{analysis_list}
+	</select>
+
+	<!-- 분기 매출 구하기 -->
+	<select resultType="String" id="sales" parameterType="indexDTO">
+		select commercial_salesofmonth from market_info_type where
+		commercial_road_type=#{analysis_list} and
+		commercial_service_type=#{analysis_type}
+	</select>
+
+	<select resultType="String" id="risk_level"
+		parameterType="indexDTO">
+		select risk from risk_rate_foundation where dong=#{analysis_city}
+	</select>
+
+	<!-- 경도구하기 -->
+	<select resultType="String" id="getLongitude"
+		parameterType="indexDTO">
+		select longitude from market_info where name_load like '%' ||
+		#{analysis_list} AND rowid in(select max(rowid) from market_info group
+		by name_load)
+	</select>
+
+	<!-- 경도구하기(종로) -->
+	<select resultType="String" id="getLongitude_JongNo"
+		parameterType="indexDTO">
+		elect longitude from market_info where dong ='#{analysis_list}' AND rowid
+		in(select max(rowid) from market_info group by dong)
+	</select>
+
+	<!-- 위도구하기 -->
+	<select resultType="String" id="getLatitude"
+		parameterType="indexDTO">
+		select latitude from market_info where name_load like '%' ||
+		#{analysis_list} AND rowid in(select max(rowid) from market_info group
+		by name_load)
+	</select>
+
+	<!-- 위도구하기(종로) -->
+	<select resultType="String" id="getLatitude_JongNo"
+		parameterType="indexDTO">
+		select latitude from market_info where dong ='#{analysis_list}' AND rowid
+		in(select max(rowid) from market_info group by dong)
+	</select>
+
+
+
+
+
+
+
+
+
+	<!--board기능 시작지점 -->
+
+	<select id="board_listAll" resultType="bdto">
+		select B.* from(select rownum rn, A.* from
+		(select * from
+		BOARD WHERE
+		board=#{board} order by hit desc)A)B
+		where rn between 1 and 5
+	</select>
+
+	<!-- 게시글 검색 페이지에따른 목록 출력 -->
+	<select id="board_searchAll" resultType="bdto"
+		parameterType="java.util.HashMap">
+		select B.* from(select rownum rn, A.* from
+		(select * from
+		board where ${sel} like '%${search}%' and board.title
+		is not
+		null order by id desc)A)B where rn between ${end-9} and ${end}
+	</select>
+	<!-- 게시글 검색목록 갯수 출력 -->
+	<select id="board_searchCount" resultType="int"
+		parameterType="java.util.HashMap">
+
+		SELECT count(*) FROM BOARD WHERE ${sel} LIKE
+		'%${search}%' and
+		BOARD.TITLE is not null
+	</select>
+
+	<!-- 게시글 댓글 갯수 출력 -->
+	<select id="board_viewCount" resultType="int"
+		parameterType="String">
+
+		SELECT
+		count(*) FROM BOARD WHERE idgroup = #{idgroup}
+
+	</select>
+	<!-- 게시글 목록 갯수 출력 -->
+	<select id="board_count" resultType="int" parameterType="String">
+
+		SELECT
+		count(*) FROM BOARD WHERE board = #{board}
+
+	</select>
+
+	<!-- 게시글 저장 -->
+	<insert id="board_savedata" parameterType="bdto">
+		insert into
+		board(id,name,title,content,hit,idgroup,step,board)
+		values(board_seq.nextval,'${name}','${title}','${content}',0,board_seq.currval,0,'${board}')
+	</insert>
+	<!-- 해당페이지에 따른 게시글 목록 출력 -->
+	<select id="board_paging" resultType="bdto"
+		parameterType="java.util.HashMap">
+		select B.* from(select rownum rn, A.* from
+		(select * from
+		BOARD WHERE board=#{board} order by idgroup desc,step
+		asc)A)B
+		where
+		rn between ${end-9} and ${end}
+	</select>
+	<!-- 게시글 보기 -->
+	<select id="board_contentView" resultType="bdto">
+		select * from
+		board
+		where id=#{idgroup}
+	</select>
+	<!-- 게시글 클릭당 조회수 1씩 증가 -->
+	<update id="board_upHit">
+		update board set hit=hit+1 where id=#{idgroup}
+	</update>
+	<!-- 게시글 수정 -->
+	<update id="board_revise">
+		update board set
+		title=#{title},content=#{content} where id=#{id}
+	</update>
+	<!-- 게시글 삭제(해당게시글 댓글도 전부삭제 -->
+	<delete id="board_content_delete">
+		delete from board where idgroup=#{id}
+	</delete>
+	<!-- 댓글 삭제 -->
+	<delete id="board_reply_delete">
+		delete from board where id=#{id}
+	</delete>
+	<!-- id기준으로 댓글 불러오기 -->
+	<select id="board_reply_view" resultType="bdto">
+		select * from board
+		where
+		idgroup=#{idgroup} order by id asc
+	</select>
+	<!-- 댓글 업데이트 -->
+	<update id="board_reply_update">
+		update board set content=#{content}
+		where id=#{id}
+	</update>
+
+	<!-- 댓글 저장 -->
+	<insert id="board_reply_save">
+		insert into
+		board(id,name,title,hit,content,idgroup,step,board,cnt)
+		values(board_seq.nextval,#{name},#{title,jdbcType=VARCHAR},0,#{content},#{idgroups},#{step}+1,#{board,jdbcType=VARCHAR},0)
+	</insert>
+
+	<!-- 댓글 step 순서부여 -->
+	<update id="board_replyup">
+		update board set cnt=cnt+1
+		where id=#{idgroup}
+	</update>
+	<update id="board_replydown">
+		update board set cnt=cnt-1
+		where id=#{idgroup}
+	</update>
+	<!-- board기능 끝 -->
+
+	<!-- Member start -->
+	<select id="login" resultType="com.suc.DTO.MemberDTO">
+		select * from member where
+		id=#{id}
+	</select>
+	<select id="test" resultType="int" parameterType="String">
+		select count(*)
+		from member where id=#{data}
+	</select>
+	<insert id="register" parameterType="com.suc.DTO.MemberDTO">
+		insert into member
+		values(#{id}, #{pw}, #{name}, #{birthdate}, #{email}, #{tel},
+		#{membership_type}, #{business_interests}, #{region_of_interest})
+	</insert>
+	<select id="find_id" resultType="String"
+		parameterType="com.suc.DTO.MemberDTO">
+		select id from member where name=#{name} and
+		email=#{email} and tel=#{tel}
+	</select>
+	<delete id="memberDel" parameterType="String">
+		delete from member where
+		id=#{id}
+	</delete>
+	<update id="update" parameterType="com.suc.DTO.MemberDTO">
+		update member set pw=#{pw},
+		name=#{name}, birthdate=#{birthdate}, email=#{email}, tel=#{tel},
+		membership_type=#{membership_type},
+		business_interests=#{business_interests},
+		region_of_interest=#{region_of_interest} where id=#{id}
+	</update>
+	<!-- Member end -->
+
+</mapper>
+  
